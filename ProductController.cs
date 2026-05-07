@@ -2,8 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 using MyApi.Models;
 
 namespace MyApi;
-    [Route("api/[controller]/[action]")]
+   
     [ApiController]
+    [Route("api/[controller]")]
 public class ProductController : ControllerBase
 {
 
@@ -17,15 +18,16 @@ public class ProductController : ControllerBase
         [HttpGet]
         public async Task<IActionResult> GetProducts()
         {
-            try
-            {
                 var data = await _productService.GetProductsAsync();
                 return Ok(data);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.ToString()); // temporary for debugging
-            }
+
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetProductById(int id)
+        {
+            var product = await _productService.GetProductByIdAsync(id);
+            return product == null ? NotFound() : Ok(product);
         }
   
 }

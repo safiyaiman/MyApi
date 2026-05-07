@@ -10,7 +10,7 @@ public class Products : IProducts
 {
     private static readonly HttpClient httpClient = new()
     {
-        BaseAddress = new Uri("https://dummyjson.com/")
+        BaseAddress = new Uri("http://dummyjson.com/")
     };
 
     private readonly ProductRepository _productRepository;
@@ -70,4 +70,29 @@ public class Products : IProducts
         }
     }
     
+
+    public async Task<Product?> GetProductByIdAsync(int id)
+    {
+       
+        var productByid= await _productRepository.GetByIdAsync(id);
+        if (productByid != null) 
+            return productByid;
+        
+            var responseProduct = await httpClient.GetAsync($"products/{id}");
+            if (responseProduct.IsSuccessStatusCode)
+            {
+                var apiResponse = await responseProduct.Content.ReadFromJsonAsync<Product>();
+                productByid= apiResponse ?? new Product();
+
+                if (productByid !=null)
+                {
+                    await _productRepository.InsertProductIfNotExistsAsync(productByid);
+                }
+            }
+        
+        
+        return productByid;
+        
+    }
+
 }
