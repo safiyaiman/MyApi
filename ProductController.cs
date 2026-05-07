@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using MyApi.Models;
 
 namespace MyApi;
    
@@ -26,8 +25,23 @@ public class ProductController : ControllerBase
         [HttpGet("{id}")]
         public async Task<IActionResult> GetProductById(int id)
         {
-            var product = await _productService.GetProductByIdAsync(id);
-            return product == null ? NotFound() : Ok(product);
+            try
+            {
+                var product = await _productService.GetProductByIdAsync(id);
+                if (product == null)
+                {
+                    return NotFound(new { message = $"Product with id {id} was not found." });
+                }
+
+                return Ok(product);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, 
+                    new { message = "An error occurred while processing the request.", detail = ex.Message });
+            }
+                
+                
         }
   
 }

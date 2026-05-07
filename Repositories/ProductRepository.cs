@@ -19,8 +19,7 @@ public class ProductRepository
         using (var connection = new SqlConnection(_connectionString))
         {
             await connection.OpenAsync();
-            // use connection here
-            
+       
             var cmd = new SqlCommand(@"SELECT Id, Title,
                            Description, 
                            Price, 
