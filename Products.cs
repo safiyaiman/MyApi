@@ -8,15 +8,13 @@ namespace MyApi;
 
 public class Products : IProducts
 {
-    private static readonly HttpClient httpClient = new()
-    {
-        BaseAddress = new Uri("http://dummyjson.com/")
-    };
+    private readonly HttpClient _httpClient;
 
     private readonly ProductRepository _productRepository;
 
-    public Products(ProductRepository productRepository)
+    public Products(HttpClient httpClient,ProductRepository productRepository)
     {
+        _httpClient = httpClient;
         _productRepository = productRepository;
     }
     
@@ -29,7 +27,7 @@ public class Products : IProducts
                 return local;
             
             var result = new List<Product>();
-            var response = await httpClient.GetAsync("products");
+            var response = await _httpClient.GetAsync("products");
 
             if (response.IsSuccessStatusCode)
             {
@@ -78,7 +76,7 @@ public class Products : IProducts
         if (productByid != null) 
             return productByid;
         
-            var responseProduct = await httpClient.GetAsync($"products/{id}");
+            var responseProduct = await _httpClient.GetAsync($"products/{id}");
             if (responseProduct.IsSuccessStatusCode)
             {
                 var apiResponse = await responseProduct.Content.ReadFromJsonAsync<Product>();
